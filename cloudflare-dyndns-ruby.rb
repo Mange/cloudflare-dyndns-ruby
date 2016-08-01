@@ -164,7 +164,7 @@ end
 
 if ARGV.include?("--help")
   puts <<-USAGE
-#$0 [-v] [--help[
+#$0 [-v] [--help]
 
 Determines the machine's current external IP, then updates a specific DNS A record on Cloudflare with that IP.
 
