@@ -143,23 +143,33 @@ def main(verbose: false)
 end
 
 IP_URIS = [
-  URI.parse("https://ipof.in/txt"),
   URI.parse("https://4.ifcfg.me/i"),
   URI.parse("http://whatismyip.akamai.com/"),
+  URI.parse("http://checkip.dyndns.com/"),
 ].freeze
 
 def determine_ip(verbose:)
   IP_URIS.each do |uri|
     STDERR.puts "> GET #{uri}" if verbose
-    ip = Net::HTTP.get(uri).strip
-    if ip =~ /\d{1,3}(\.\d{1,3}){3}/
+    if (ip = fetch_ip(uri))
       return ip
-    else
-      STDERR.puts "ERROR: Not a valid IP: #{ip}"
     end
   end
   STDERR.puts "ERROR: Could not determine IP!"
   exit 1
+end
+
+def fetch_ip(uri)
+  ip = Net::HTTP.get(uri).strip
+  if ip =~ /\d{1,3}(\.\d{1,3}){3}/
+    ip
+  else
+    STDERR.puts "ERROR: Not a valid IP: #{ip}"
+    nil
+  end
+rescue => error
+  STDERR.puts "ERROR: Could not fetch IP from #{uri}: #{error}"
+  nil
 end
 
 if ARGV.include?("--help")
